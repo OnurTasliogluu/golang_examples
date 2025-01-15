@@ -39,15 +39,7 @@ func main() {
 			jsonFilePath := filepath.Join(outputFolder, file.Name()+".json")
 
 			wg.Add(1) // Increment WaitGroup counter
-			go func(csvPath, jsonPath string) {
-				defer wg.Done() // Decrement WaitGroup counter when done
-				err := processCSVFile(csvPath, jsonPath)
-				if err != nil {
-					fmt.Printf("Error processing file %s: %v\n", csvPath, err)
-				} else {
-					fmt.Printf("Successfully converted %s to %s\n", csvPath, jsonPath)
-				}
-			}(csvFilePath, jsonFilePath)
+			go processCSVFileConcurrently(csvFilePath, jsonFilePath, &wg)
 		}
 	}
 
@@ -56,12 +48,14 @@ func main() {
 	fmt.Println("All files processed.")
 }
 
-// Function to process a single CSV file
-func processCSVFile(csvFilePath, jsonFilePath string) error {
+func processCSVFileConcurrently(csvFilePath, jsonFilePath string, wg *sync.WaitGroup) {
+	defer wg.Done() // Decrement WaitGroup counter when done
+
 	// Open the CSV file
 	csvFile, err := os.Open(csvFilePath)
 	if err != nil {
-		return fmt.Errorf("error opening CSV file: %w", err)
+		fmt.Printf("Error opening CSV file %s: %v\n", csvFilePath, err)
+		return
 	}
 	defer csvFile.Close()
 
@@ -69,12 +63,14 @@ func processCSVFile(csvFilePath, jsonFilePath string) error {
 	reader := csv.NewReader(csvFile)
 	records, err := reader.ReadAll()
 	if err != nil {
-		return fmt.Errorf("error reading CSV file: %w", err)
+		fmt.Printf("Error reading CSV file %s: %v\n", csvFilePath, err)
+		return
 	}
 
 	// Convert CSV records to JSON
 	if len(records) < 1 {
-		return fmt.Errorf("no data found in CSV file")
+		fmt.Printf("No data found in CSV file %s\n", csvFilePath)
+		return
 	}
 
 	headers := records[0]
@@ -82,7 +78,7 @@ func processCSVFile(csvFilePath, jsonFilePath string) error {
 
 	for _, row := range records[1:] { // Skip headers
 		if len(row) != len(headers) {
-			fmt.Println("Skipping row with mismatched column count")
+			fmt.Printf("Skipping row with mismatched column count in %s\n", csvFilePath)
 			continue
 		}
 
@@ -96,15 +92,17 @@ func processCSVFile(csvFilePath, jsonFilePath string) error {
 	// Write the JSON data to a file
 	jsonFile, err := os.Create(jsonFilePath)
 	if err != nil {
-		return fmt.Errorf("error creating JSON file: %w", err)
+		fmt.Printf("Error creating JSON file %s: %v\n", jsonFilePath, err)
+		return
 	}
 	defer jsonFile.Close()
 
 	encoder := json.NewEncoder(jsonFile)
 	encoder.SetIndent("", "  ") // Pretty-print JSON
 	if err := encoder.Encode(jsonData); err != nil {
-		return fmt.Errorf("error encoding JSON data: %w", err)
+		fmt.Printf("Error encoding JSON data to file %s: %v\n", jsonFilePath, err)
+		return
 	}
 
-	return nil
+	fmt.Printf("Successfully converted %s to %s\n", csvFilePath, jsonFilePath)
 }

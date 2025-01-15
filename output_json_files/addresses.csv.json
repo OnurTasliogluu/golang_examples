@@ -1,0 +1,42 @@
+[
+  {
+    " 08075": "09119",
+    " NJ": " PA",
+    "120 jefferson st.": "220 hobo Av.",
+    "Doe": "McGinnis",
+    "John": "Jack",
+    "Riverside": "Phila"
+  },
+  {
+    " 08075": "08075",
+    " NJ": " NJ",
+    "120 jefferson st.": "120 Jefferson St.",
+    "Doe": "Repici",
+    "John": "John \"Da Man\"",
+    "Riverside": "Riverside"
+  },
+  {
+    " 08075": " 91234",
+    " NJ": "SD",
+    "120 jefferson st.": "7452 Terrace \"At the Plaza\" road",
+    "Doe": "Tyler",
+    "John": "Stephen",
+    "Riverside": "SomeTown"
+  },
+  {
+    " 08075": " 00298",
+    " NJ": " SD",
+    "120 jefferson st.": "",
+    "Doe": "Blankman",
+    "John": "",
+    "Riverside": "SomeTown"
+  },
+  {
+    " 08075": "00123",
+    " NJ": "CO",
+    "120 jefferson st.": "9th, at Terrace plc",
+    "Doe": "Jet",
+    "John": "Joan \"the bone\", Anne",
+    "Riverside": "Desert City"
+  }
+]
